@@ -19,7 +19,10 @@ SPACE = " "
 VERTICAL_SEP = "|"
 HORIZONTAL_SEP = "--"
 SEP_LINE = "–––––––––––––––––––––––––––––––––––––"
-TETRAMINO_ASCII = """ .---. .----..---. .----.   .--.  .-.   .-..-..-. .-. .----. \n{_   _}| {_ {_   _}| {}  } / {} \ |  `.'  || ||  `| |/  {}  \ \n  | |  | {__  | |  | .-. \/  /\  \| |\ /| || || |\  |\      /\n  `-'  `----' `-'  `-' `-'`-'  `-'`-' ` `-'`-'`-' `-' `----'\n"""
+TETRAMINO_ASCII = """ .---. .----..---. .----.   .--.  .-.   .-..-..-. .-. .----. 
+{_   _}| {_ {_   _}| {}  } / {} \\ |  `.'  || ||  `| |/  {}  \\ 
+  | |  | {__  | |  | .-. \\/  /\\  \\| |\\ /| || || |\\  |\\      /
+  `-'  `----' `-'  `-' `-'`-'  `-'`-' ` `-'`-'`-' `-' `----'"""
 
 GREEN = "\033[92m"
 RED = "\033[91m"
@@ -43,16 +46,18 @@ def welcome():
     print(GRAY + "  " + __description__)
     print("  > Author :", __authors__,f"({__contact__})")
     print("  >",__course__ , RESET_COLOR)
-    # Start
+    # Rules
     print(GREEN + "\nRules :")
     print(LIGHT_GRAY + " > To win the game, place all the tetraminos on the grid")
     print(" > To select a tetramino, use the numbers '1' to '8'")
     print(" > To move a tetramino, use the keys 'i', 'j', 'k', 'l'")
     print(" > To rotate a tetramino, use the keys 'u' and 'o'")
     print(" > To validate the move, press 'v'\n")
+    # Start message
     print(GREEN + "To start the game, press any key")
     print(RED + "To quit the game, press 'q'")
     print(BLUE + SEP_LINE*2 + RESET_COLOR)
+    # Wait for a key 
     key = getkey()
     if key != "q":
         clear()
@@ -210,10 +215,8 @@ def place_tetraminos(tetraminos: list, grid: list):
     :param grid: list of the grid
     :return: new grid with placed tetraminos
     """
-
     # Create a new grid with the same size as the grid
     grid = create_grid((len(grid[0])-2)//3, (len(grid)-2)//3)
-
     number = 1
     for tetramino in tetraminos:
         # Initialize vars
@@ -276,7 +279,6 @@ def check_move(tetramino, grid):
         validate_bloc_pos = [('\x1b[' + color_code + 'm' + str(i) + SPACE + '\x1b[0m') for i in range(1,9) ]
         if bloc_pos != SPACE*2 and bloc_pos not in validate_bloc_pos:
             return False
-
     return True
 
 
@@ -320,7 +322,6 @@ def print_grid(grid: list, no_number: bool):
                 if "\x1b[" in row[i] and row[i][START_CASE_NUMBER:END_CASE_NUMBER] != "XX":
                     row[i] = row[i][0:START_CASE_NUMBER] + "  \x1b[0m"
 
-
     # Vertical Border
     for row in display_grid:
         row.insert(0, VERTICAL_SEP)
@@ -352,9 +353,7 @@ def main():
     try:
         card = sys.argv[1]
     except:
-        error_name = f"No card specified"
-        error_desc = "Usage : python3 tetramino.py <card.txt>"
-        error(error_name, error_desc)
+        error("No card specified", "Usage : python3 tetramino.py <card.txt>")
 
     # Get the size and the tetraminos
     size, map_tetraminos = import_card(card)
@@ -420,8 +419,7 @@ def main():
                     case "r":  # reset
                         selected_tetramino[2] = [0, 0]
             except:
-                # If the tetramino is out of the grid, pass
-                pass
+                pass # If the tetramino is out of the grid, pass
             finally:
                 grid = place_tetraminos(tetraminos, grid)
                 # Print the grid

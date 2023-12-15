@@ -14,16 +14,17 @@ __date__ = "2023-11-22"
 from getkey import getkey
 import os, sys
 
-# Vars and const
+# Consts
 SPACE = " "
 VERTICAL_SEP = "|"
 HORIZONTAL_SEP = "--"
 SEP_LINE = "–––––––––––––––––––––––––––––––––––––"
-TETRAMINO_ASCII = """ .---. .----..---. .----.   .--.  .-.   .-..-..-. .-. .----. 
+TETRAMINO_ASCII = """
+ .---. .----..---. .----.   .--.  .-.   .-..-..-. .-. .----. 
 {_   _}| {_ {_   _}| {}  } / {} \\ |  `.'  || ||  `| |/  {}  \\ 
   | |  | {__  | |  | .-. \\/  /\\  \\| |\\ /| || || |\\  |\\      /
-  `-'  `----' `-'  `-' `-'`-'  `-'`-' ` `-'`-'`-' `-' `----'"""
-
+  `-'  `----' `-'  `-' `-'`-'  `-'`-' ` `-'`-'`-' `-' `----'
+"""
 GREEN = "\033[92m"
 RED = "\033[91m"
 GRAY = "\033[90m"
@@ -33,7 +34,7 @@ LIGHT_GRAY = "\033[37m"
 RESET_COLOR = "\x1b[0m"
 
 # Functions
-def welcome():
+def title_screen():
     """
     Print a stylished welcome message
     :return: None
@@ -41,7 +42,7 @@ def welcome():
     clear()
     print(BLUE + TETRAMINO_ASCII)
     print(SEP_LINE*2)
-    print(LIGHT_BLUE + "Welcome to the Tetramino Game !")
+    print(LIGHT_BLUE + " Welcome to the Tetramino Game !")
     # Infos
     print(GRAY + "  " + __description__)
     print("  > Author :", __authors__,f"({__contact__})")
@@ -71,11 +72,9 @@ def clear():
     :return: None
     """
     if (os.name == 'posix'):
-        # Clear console on Unix/Linux/MacOS
-        os.system('clear')
+        os.system('clear')  # Clear console on Unix/Linux/MacOS
     else:
-        # Clear console on Windows
-        os.system('cls')
+        os.system('cls')  # Clear console on Windows
 
 
 def error(error_name, error_desc):
@@ -342,9 +341,7 @@ def main():
     Tetramino game
     :return: True when the player won
     """
-
-    # Welcome message
-    welcome()
+    title_screen()  # Welcome message
 
     # Initialize vars
     win = False
@@ -355,17 +352,11 @@ def main():
     except:
         error("No card specified", "Usage : python3 tetramino.py <card.txt>")
 
-    # Get the size and the tetraminos
-    size, map_tetraminos = import_card(card)
-
-    # Create the grid 
-    grid = create_grid(size[0], size[1])
-
-    # Set up the tetraminos 
-    grid, tetraminos = setup_tetraminos(map_tetraminos, grid)
+    size, map_tetraminos = import_card(card)  # Get the size and the tetraminos
+    grid = create_grid(size[0], size[1])  # Create the grid with the size of the cards
+    grid, tetraminos = setup_tetraminos(map_tetraminos, grid)  # Set up the tetraminos 
 
     while not win:
-
         # Print the grid
         print_grid(grid, False)
 
@@ -380,11 +371,9 @@ def main():
             except:
                 num_tetramino = None
 
-
-
+        # Initialize vars
         selected_tetramino = tetraminos[num_tetramino-1]
-
-        # Move the tetramino
+        old_gap = selected_tetramino[2]
         select_move = None
         validate_move = None
 
@@ -399,33 +388,23 @@ def main():
             select_move = getkey()
             # Convert the selected tetramino to a list to modify it
             selected_tetramino[2] = list(selected_tetramino[2])
+            
             try:
                 match select_move:
-                    case "i":  # up
-                        selected_tetramino[2][1] -= 1
-                    case "k":  # down
-                        selected_tetramino[2][1] += 1
-                    case "j":  # left
-                        selected_tetramino[2][0] -= 1
-                    case "l":  # right
-                        selected_tetramino[2][0] += 1
-                    case "u":  # rotate counterclockwise
-                        selected_tetramino = rotate_tetramino(selected_tetramino, False)
-                    case "o":  # rotate clockwise
-                        selected_tetramino = rotate_tetramino(selected_tetramino)
-                    case "v":  # validate
-                        if check_move(selected_tetramino, grid):
-                            validate_move = True
-                    case "r":  # reset
-                        selected_tetramino[2] = [0, 0]
-            except:
+                    case "i": selected_tetramino[2][1] -= 1  # up
+                    case "k": selected_tetramino[2][1] += 1  # down
+                    case "j": selected_tetramino[2][0] -= 1  # left
+                    case "l": selected_tetramino[2][0] += 1  # right
+                    case "u": selected_tetramino = rotate_tetramino(selected_tetramino, False)  # rotate counterclockwise
+                    case "o": selected_tetramino = rotate_tetramino(selected_tetramino, True)  # rotate clockwise
+                    case "v": validate_move = True if check_move(selected_tetramino, grid) else None  # validate the move 
+                    case "r": selected_tetramino[2] = old_gap  # reset the tetramino position to his previous pos
+            except: 
                 pass # If the tetramino is out of the grid, pass
             finally:
                 grid = place_tetraminos(tetraminos, grid)
-                # Print the grid
                 clear()
-                print_grid(grid, True)
-
+                print_grid(grid, True)  # Print the grid
 
         # Check if the player won
         clear()
@@ -433,7 +412,10 @@ def main():
 
     # Win message    
     print_grid(grid, True)
-    print(GREEN + "🎉 You won !" + RESET_COLOR)
+    print(LIGHT_BLUE + SEP_LINE)
+    print(GRAY + "  Tetramino — Game Finished")
+    print(GREEN + "  🎉 GG, you won !")
+    print(LIGHT_BLUE + SEP_LINE + RESET_COLOR)
 
     return True
 

@@ -1,6 +1,7 @@
 ###############################################
 #                  Tetramino                  #
 #            INFO-F106 : Project 1            #
+#   Usage : python3 tetramino.py <card.txt>   #
 ###############################################
 
 __title__ = "Tetramino"
@@ -195,12 +196,11 @@ def setup_tetraminos(tetraminos, grid):
         color_code = tetramino[1]
         default_gap = generate_gap(number, width, height)
         gap = [tetramino[2][0] + default_gap[0], tetramino[2][1] + default_gap[1]]
-
         tetramino[2] = gap
 
         # place the tetramino on the grid
         for x, y in pos:
-            grid[y + gap[1]][x + gap[0]] = '\x1b[' + color_code + 'm' + f"{number} " + '\x1b[0m'
+            grid[y + gap[1]][x + gap[0]] = '\x1b[' + color_code + 'm' + f"{number} " + RESET_COLOR
 
         number += 1
 
@@ -230,7 +230,7 @@ def place_tetraminos(tetraminos: list, grid: list):
                 tetramino_index = str(number) + SPACE
             else:
                 tetramino_index = "XX"
-            grid[y + gap[1] ][x + gap[0]] = ('\x1b[' + color_code + 'm' + tetramino_index + '\x1b[0m')
+            grid[y + gap[1] ][x + gap[0]] = ('\x1b[' + color_code + 'm' + tetramino_index + RESET_COLOR)
 
         number += 1
 
@@ -275,7 +275,7 @@ def check_move(tetramino, grid):
         except:
             return False
         # Check if the bloc is empty or if its already the current tetramino
-        validate_bloc_pos = [('\x1b[' + color_code + 'm' + str(i) + SPACE + '\x1b[0m') for i in range(1,9) ]
+        validate_bloc_pos = [('\x1b[' + color_code + 'm' + str(i) + SPACE + RESET_COLOR) for i in range(1,9) ]
         if bloc_pos != SPACE*2 and bloc_pos not in validate_bloc_pos:
             return False
     return True
@@ -315,23 +315,24 @@ def print_grid(grid: list, no_number: bool):
     END_CASE_NUMBER = 12
 
     if no_number:
-        # Remove the number of the tetraminos
+        # Remove the number of each valid tetraminos
         for row in display_grid:
             for i in range(width):
+                # Check if the bloc is a valid tetramino
                 if "\x1b[" in row[i] and row[i][START_CASE_NUMBER:END_CASE_NUMBER] != "XX":
-                    row[i] = row[i][0:START_CASE_NUMBER] + "  \x1b[0m"
+                    row[i] = row[i][0:START_CASE_NUMBER] + SPACE*2 + RESET_COLOR
 
     # Vertical Border
     for row in display_grid:
-        row.insert(0, VERTICAL_SEP)
-        row.append(VERTICAL_SEP)
+        row.insert(0, VERTICAL_SEP) # left
+        row.append(VERTICAL_SEP) # right
     # Horizontal Border
-    display_grid.insert(0, [HORIZONTAL_SEP for _ in range(width+1)])
-    display_grid.append([HORIZONTAL_SEP for _ in range(width+1)])
+    display_grid.insert(0, [HORIZONTAL_SEP for _ in range(width+1)]) # top
+    display_grid.append([HORIZONTAL_SEP for _ in range(width+1)]) # bottom
 
     # Print the grid
     for row in display_grid:
-        print("".join(row))
+        print("".join(row)) # Print each row
 
     return None
 
@@ -384,7 +385,7 @@ def main():
         validate_move = False
 
         while not validate_move:
-            # initialize vars
+            # get the key pressed
             select_move = getkey()
             # Convert the selected tetramino to a list to modify it
             selected_tetramino[2] = list(selected_tetramino[2])

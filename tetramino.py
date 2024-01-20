@@ -7,8 +7,8 @@
 __title__ = "Tetramino"
 __description__ = "Tetramino game inspired by \"Gagne ton papa\""
 __course__ = "INFO-F106 — Project 1"
-__authors__ = "Mohamed Benameur"
-__contact__ = "mohamed.benameur@ulb.be"
+__authors__ = "Amine"
+__contact__ = "@amineflex"
 __date__ = "2023-11-22"
 
 # Import modules
